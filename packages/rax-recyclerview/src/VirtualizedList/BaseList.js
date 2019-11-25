@@ -1,5 +1,6 @@
 import { createElement, PureComponent } from 'rax';
 import PropTypes from 'rax-proptypes';
+import cloneElement from 'rax-clone-element';
 
 import SizeAndPositionManager from './SizeAndPositionManager';
 
@@ -75,7 +76,7 @@ export default class BaseList extends PureComponent {
     offset:
       this.props.scrollOffset ||
       this.props.scrollToIndex != null &&
-        this.getOffsetForIndex(this.props.scrollToIndex) ||
+      this.getOffsetForIndex(this.props.scrollToIndex) ||
       0,
     scrollChangeReason: SCROLL_CHANGE_REASON.REQUESTED,
   };
@@ -203,7 +204,7 @@ export default class BaseList extends PureComponent {
     scrollToAlignment = this.props.scrollToAlignment,
     itemCount = this.props.children.length,
   ) {
-    const {style = {}} = this.props;
+    const { style = {} } = this.props;
 
     if (index < 0 || index >= itemCount) {
       index = 0;
@@ -232,12 +233,12 @@ export default class BaseList extends PureComponent {
       offset,
       overscanCount,
       totalSize,
-      stickyIndices,
+      stickyIndices = [],
       children,
       width,
     } = options;
     const items = [];
-    const wrapperStyle = {...STYLE_WRAPPER, ...style, width};
+    const wrapperStyle = { ...STYLE_WRAPPER, ...style, width };
 
     const { start, stop } = this.sizeAndPositionManager.getVisibleRange({
       containerSize: options[sizeProp[this.scrollDirection]] || style[sizeProp[this.scrollDirection]] || 0,
@@ -253,28 +254,35 @@ export default class BaseList extends PureComponent {
     if (stickyIndices != null && stickyIndices.length !== 0) {
       stickyIndices.forEach((index) => {
         const child = children[index];
-        child.props.style = {
-          ...child.props.style,
-          ...this.getStyle(index, true)
-        };
-        items.push(child);
+        items.push(cloneElement(child, {
+          key: index,
+          ...child.props,
+          style: {
+            ...child.props.style,
+            ...this.getStyle(index, true)
+          }
+        }));
       });
 
       if (this.scrollDirection === DIRECTION.HORIZONTAL) {
         innerStyle.display = 'flex';
       }
     }
-
     if (typeof start !== 'undefined' && typeof stop !== 'undefined') {
       let index = start;
       renderChildren = children.slice(start, stop + 1);
       renderChildren.forEach((child) => {
-        child.props.style = {
-          ...child.props.style,
-          ...this.getStyle(index, false)
-        };
+        if (stickyIndices.indexOf(index) === -1) {
+          items.push(cloneElement(child, {
+            key: index,
+            ...child.props,
+            style: {
+              ...child.props.style,
+              ...this.getStyle(index, false)
+            }
+          }));
+        }
         index++;
-        items.push(child);
       });
     }
 

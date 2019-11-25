@@ -1,4 +1,4 @@
-import { PureComponent, createElement } from 'rax';
+import { PureComponent, createElement, cloneElement } from 'rax';
 import PropTypes from 'rax-proptypes';
 import BaseList from './BaseList';
 import {
@@ -9,7 +9,7 @@ import Timer from './timer';
 import NestedList from './NestedList';
 import throttle from './throttle';
 
-export {DIRECTION as ScrollDirection} from './constants';
+export { DIRECTION as ScrollDirection } from './constants';
 
 const STYLE_NODE_ID = 'rax-virtualized-list-style';
 const DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
@@ -68,7 +68,7 @@ export default class VirtualizedList extends BaseList {
   }
 
   componentDidUpdate(_, prevState) {
-    const {offset, scrollChangeReason} = this.state;
+    const { offset, scrollChangeReason } = this.state;
 
     if (
       prevState.offset !== offset &&
@@ -110,10 +110,9 @@ export default class VirtualizedList extends BaseList {
       showsVerticalScrollIndicator,
       className,
       nestedList,
-      ...props
     } = this.props;
     const { offset } = this.state;
-    const wrapperStyle = {...STYLE_WRAPPER, ...style, width};
+    const wrapperStyle = { ...STYLE_WRAPPER, ...style, width };
 
     let showsScrollIndicator = horizontal ? showsHorizontalScrollIndicator : showsVerticalScrollIndicator;
 
@@ -136,7 +135,6 @@ export default class VirtualizedList extends BaseList {
       ...this.props,
       offset,
     });
-
     return (
       <div ref={this.getRef} style={wrapperStyle} className={className}>
         <div style={innerStyle}>{nodeItems}</div>

@@ -6,7 +6,7 @@ import {
   memo,
   useState,
   useRef,
-  useImperativeHandle
+  useImperativeHandle,
 } from 'rax';
 import { isWeex } from 'universal-env';
 import View from 'rax-view';
@@ -52,7 +52,7 @@ const NestedList = memo(
 );
 
 const RecyclerView = forwardRef((props, ref) => {
-  const { className, style, ...rest } = props;
+  const { className, style, children, ...rest } = props;
   const [loadmoreretry, setLoadmoreretry] = useState(0);
   const scrollview = useRef(null);
   const list = useRef(null);
@@ -75,7 +75,6 @@ const RecyclerView = forwardRef((props, ref) => {
     };
     props.onScroll(e);
   };
-
 
   useImperativeHandle(ref, () => ({
     _nativeNode: isWeex ? list.current : needRecycler ? scrollview.current : scrollview.current._nativeNode,
@@ -111,22 +110,22 @@ const RecyclerView = forwardRef((props, ref) => {
   }));
 
   if (isWeex) {
-    let cells = Children.map(props.children, (child, index) => {
+    let cells = Children.map(children, (child, index) => {
       if (child) {
         let hasOnRefresh =
-              child.props && typeof child.props.onRefresh == 'function';
+          child.props && typeof child.props.onRefresh == 'function';
         if (
           props._autoWrapCell &&
-              child.type != RefreshControl &&
-              child.type != Header &&
-              !hasOnRefresh
+          child.type != RefreshControl &&
+          child.type != Header &&
+          !hasOnRefresh
         ) {
-          return <Cell>{child}</Cell>;
+          return <Cell key={index}>{child}</Cell>;
         } else {
           return child;
         }
       } else {
-        return <Cell />;
+        return <Cell key={index} />;
       }
     });
 
@@ -154,12 +153,18 @@ const RecyclerView = forwardRef((props, ref) => {
     );
   } else {
     if (needRecycler) {
+      const stickyIndices = [];
+      Children.forEach(children, (child, index) => {
+        if (child.type == Header) {
+          stickyIndices.push(index);
+        }
+      });
       return (
-        <VirtualizedList {...props} className={className} style={style} ref={scrollview} />
+        <VirtualizedList {...rest} stickyIndices={stickyIndices} className={className} style={style} ref={scrollview} >{children}</VirtualizedList>
       );
     } else {
       return (
-        <ScrollView {...props} className={className} style={style} ref={scrollview} />
+        <ScrollView {...rest} className={className} style={style} ref={scrollview} >{children}</ScrollView>
       );
     }
   }
