@@ -81,7 +81,6 @@ Component({
       this.triggerEvent('onBlur', event);
       if (event.detail.value !== this.data.previousValue) {
         this.triggerEvent('onChange', event);
-        this.triggerEvent('onChangeText', event.detail.value);
         this.setData({
           previousValue: event.detail.value
         });
