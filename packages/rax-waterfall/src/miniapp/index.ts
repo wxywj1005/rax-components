@@ -5,6 +5,7 @@ Component({
   data: {
     columns: []
   },
+  // @ts-ignore
   props: {
     onEndReached: () => { },
     endReachedThreshold: 500,
@@ -15,10 +16,15 @@ Component({
     rightGap: 0
   },
   didMount: function didMount() {
-    this.update();
+    if (!my.canIUse('component2')) {
+      this.update();
+    }
+
   },
   didUpdate: function didUpdate() {
-    this.update();
+    if (!my.canIUse('component2')) {
+      this.update();
+    }
   },
   methods: {
     onEndReached(e) {
