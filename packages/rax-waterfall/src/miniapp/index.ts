@@ -15,11 +15,13 @@ Component({
     leftGap: 0,
     rightGap: 0
   },
+  deriveDataFromProps() {
+    this.update();
+  },
   didMount: function didMount() {
     if (!my.canIUse('component2')) {
       this.update();
     }
-
   },
   didUpdate: function didUpdate() {
     if (!my.canIUse('component2')) {
