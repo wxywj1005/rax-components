@@ -94,7 +94,7 @@ class BaseView extends Component {
     this.loopIndex = loopIndex;
     this.itemCount = this.filterElements(this.props, Panel).length;
 
-    this.switchTo(loopIndex, {duration: 0, isInitial: true});
+    this.switchTo(loopIndex, {duration: 1, isInitial: true});
     this.loopIndex = defaultIndex + startIndexes.length;
     this.autoPlay();
   }
