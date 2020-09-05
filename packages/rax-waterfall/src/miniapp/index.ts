@@ -15,17 +15,17 @@ Component({
     leftGap: 0,
     rightGap: 0
   },
-  deriveDataFromProps() {
-    this.update();
+  deriveDataFromProps(nextProps) {
+    this.update(nextProps);
   },
   didMount: function didMount() {
     if (!my.canIUse('component2')) {
-      this.update();
+      this.update(this.props);
     }
   },
   didUpdate: function didUpdate() {
     if (!my.canIUse('component2')) {
-      this.update();
+      this.update(this.props);
     }
   },
   methods: {
@@ -35,11 +35,11 @@ Component({
         this.props.onEndReached(event);
       }
     },
-    update() {
-      let columns = this.getColunms(this.props.dataSource, this.props.columnCount);
+    update({ dataSource, columnCount }) {
+      let columns = this.getColunms(dataSource, columnCount);
       this.setData({ columns });
     },
-    getColunms(dataSource, columnCount) {
+    getColunms(dataSource = [], columnCount = 1) {
       let columns = [];
       let moduleHeights = [];
 
