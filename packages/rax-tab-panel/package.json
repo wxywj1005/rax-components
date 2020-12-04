@@ -1,6 +1,6 @@
 {
   "name": "rax-tab-panel",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "rax",
   "author": "",
   "main": "lib/index.js",
@@ -25,6 +25,8 @@
   "dependencies": {
     "object-assign": "^4.1.1",
     "prop-types": "^15.7.2",
+    "rax-children": "^1.0.0",
+    "rax-clone-element": "^1.0.0",
     "rax-find-dom-node": "^1.0.0",
     "rax-link": "^1.0.1",
     "rax-text": "^1.0.1",

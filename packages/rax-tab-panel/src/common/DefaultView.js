@@ -4,6 +4,8 @@
 
 import { createElement, createRef } from 'rax';
 import View from 'rax-view';
+import Children from 'rax-children';
+import cloneElement from 'rax-clone-element';
 import { isWeex } from 'universal-env';
 import binding from 'weex-bindingx';
 import transition from 'universal-transition';
@@ -14,7 +16,6 @@ import {
   noop,
   forbidSwipeBack,
   Event as Emitter,
-  combineStyle,
 } from './Utils';
 import BaseView from './BaseView';
 import PanView from './PanView';
@@ -319,47 +320,30 @@ class DefaultView extends BaseView {
   };
 
   render() {
-    let { isPanEnabled } = this.props;
-
-    let curIndex = this.curIndex;
-
-    if (this.props.children && !(this.props.children instanceof Array)) {
-      this.props.children = [this.props.children];
-    }
-
-    let children =
-      this.props.children &&
-      this.props.children.map((child, index) => {
-        if (child && child.type === TabPanel) {
-          return (
-            <TabPanel
-              index={index}
-              curIndex={curIndex}
-              {...child.props}
-              style={combineStyle(
-                { width: this.itemWidth },
-                { ...child.props.style }
-              )}
-              ref={`panel_${index}`}
-            />
-          );
-        } else {
-          return child;
-        }
-      });
-
-    let wrapProps =
-      !Detection.isEnableSliderAndroid && isPanEnabled
-        ? { onHorizontalPan: this.onHorizontalPan }
-        : {};
-
+    const { isPanEnabled, children, style } = this.props;
     return (
       <View
         {...this.props}
-        style={combineStyle(styles.container, this.props.style)}
+        style={{...styles.container, ...style}}
       >
-        <PanView ref={this.wrap} {...wrapProps} style={styles.wrap}>
-          {children}
+        <PanView ref={this.wrap} {...!Detection.isEnableSliderAndroid && isPanEnabled
+          ? { onHorizontalPan: this.onHorizontalPan }
+          : {}} style={styles.wrap}>
+          {Children.map(children, (child, index) => {
+            if (child.type === TabPanel) {
+              return cloneElement(child, {
+                index,
+                curIndex: this.curIndex,
+                style: {
+                  width: this.itemWidth,
+                  ...child.props.style
+                },
+                ref: `panel_${index}`
+              });
+            } else {
+              return child;
+            }
+          })}
         </PanView>
       </View>
     );
