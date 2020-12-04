@@ -321,14 +321,15 @@ class DefaultView extends BaseView {
 
   render() {
     const { isPanEnabled, children, style } = this.props;
+    const wrapProps = !Detection.isEnableSliderAndroid && isPanEnabled
+      ? { onHorizontalPan: this.onHorizontalPan }
+      : {};
     return (
       <View
         {...this.props}
         style={{...styles.container, ...style}}
       >
-        <PanView ref={this.wrap} {...!Detection.isEnableSliderAndroid && isPanEnabled
-          ? { onHorizontalPan: this.onHorizontalPan }
-          : {}} style={styles.wrap}>
+        <PanView ref={this.wrap} {...wrapProps} style={styles.wrap}>
           {Children.map(children, (child, index) => {
             if (child.type === TabPanel) {
               return cloneElement(child, {
